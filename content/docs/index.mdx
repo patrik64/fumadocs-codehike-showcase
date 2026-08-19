@@ -1,0 +1,81 @@
+---
+title: Introduction
+description: A showcase of Fumadocs and Code Hike working together in a React app
+---
+
+This site is a **React application** that combines two
+libraries:
+
+- **[Fumadocs](https://fumadocs.dev)** provides the documentation
+  framework — the layout, sidebar, table of contents, search and theming
+  you are looking at right now. It runs here on React Router's Vite
+  plugin, with content compiled by `fumadocs-mdx`.
+- **[Code Hike](https://codehike.org)** takes over every code block on
+  these pages. It highlights code at build time and unlocks rich code
+  presentation: annotations, and layouts like scrollycoding and
+  spotlight.
+
+## What to look at
+
+- [Scrollycoding](/docs/scrollycoding) — the headline feature: a
+  scroll-driven code walkthrough with animated token transitions.
+- [Spotlight](/docs/spotlight) — the click-driven variant of the same
+  idea.
+- [Slideshow](/docs/slideshow) — step through code versions with
+  prev/next controls.
+- [Annotations](/docs/annotations) — marks, callouts, diffs and line
+  numbers, driven by comments inside the code.
+
+## Every code block is Code Hike
+
+Ordinary fenced code blocks in the MDX render through a custom `Code`
+component powered by Code Hike's `Pre`. That means any block can use
+annotations:
+
+```ts utils.ts
+export function groupBy<T, K extends string>(
+  items: T[],
+  // !callout[/keyFor/] Annotations like this callout are written as comments in the MDX
+  keyFor: (item: T) => K,
+): Record<K, T[]> {
+  const groups = {} as Record<K, T[]>
+  for (const item of items) {
+    const key = keyFor(item)
+    // !mark
+    groups[key] ??= []
+    groups[key].push(item)
+  }
+  return groups
+}
+```
+
+The comment annotations (`!callout`, `!mark`, …) are stripped from the
+rendered output — readers only see their effect.
+
+## How the integration works
+
+Code Hike plugs into the `fumadocs-mdx` pipeline as a remark/recma plugin
+pair. It is configured in `vite.config.ts` — deliberately not in
+`app/lib/source.ts`, which the browser also imports (the compiler plugins
+are Node-only):
+
+```ts vite.config.ts
+const codeHikeConfig: CodeHikeConfig = {
+  components: { code: "Code" },
+  syntaxHighlighting: { theme: "github-from-css" },
+}
+
+fumadocsMdx({
+  globalOptions: {
+    mdxOptions: {
+      // !mark(1:1)
+      remarkPlugins: (v) => [[remarkCodeHike, codeHikeConfig], ...v],
+      recmaPlugins: [[recmaCodeHike, codeHikeConfig]],
+    },
+  },
+})
+```
+
+Highlighting happens at compile time (no client-side highlighter is
+shipped), and the `github-from-css` theme maps token colors to CSS
+variables so code follows the light/dark toggle in the top bar — try it.

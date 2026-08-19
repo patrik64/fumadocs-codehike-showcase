@@ -1,0 +1,95 @@
+---
+title: Annotations
+description: Code Hike annotations — marks, callouts, diffs and line numbers
+---
+
+Code Hike annotations are written as **comments inside the code block**.
+The comment is removed from the rendered output; only its effect remains.
+Each annotation is implemented by a small `AnnotationHandler` in
+`app/components/annotations/`.
+
+## Mark
+
+`!mark` highlights the next line, `!mark(1:2)` a range, and
+`!mark[/regex/]` highlights inline matches. An optional query sets the
+color.
+
+```js
+function lorem(ipsum, dolor = 1) {
+  // !mark
+  return dolor
+}
+
+function ipsum(lorem, dolor = 1) {
+  // !mark(1:2) gold
+  const sit = lorem == null ? 0 : lorem.sit
+  dolor = sit - amet(dolor)
+  // !mark[/sit/] pink
+  return sit ? consectetur(lorem) : []
+}
+```
+
+## Callout
+
+`!callout[/regex/] message` draws a speech bubble pointing at the match:
+
+```js
+const lorem = ipsum(dolor, sit)
+// !callout[/amet/] This is a callout
+const [amet, consectetur] = [0, 0]
+lorem.adipiscing((sed, elit) => {
+  if (sed) {
+    amet += elit
+  }
+})
+```
+
+## Diff
+
+`!diff -` and `!diff +` render removed and added lines, GitHub-style:
+
+```js
+function lorem(ipsum, dolor = 1) {
+  const sit = ipsum == null ? 0 : ipsum.sit
+  // !diff -
+  dolor = ipsum - sit
+  // !diff +
+  dolor = sit - amet(dolor)
+  return sit ? consectetur(ipsum) : []
+}
+```
+
+## Line numbers and file names
+
+The fence meta drives presentation too: a token with a dot becomes the
+file name in the header, and the `-n` flag turns on line numbers.
+
+```py fizzbuzz.py -n
+def fizzbuzz(n):
+    for i in range(1, n + 1):
+        if i % 15 == 0:
+            print("FizzBuzz")
+        elif i % 3 == 0:
+            print("Fizz")
+        elif i % 5 == 0:
+            print("Buzz")
+        else:
+            print(i)
+```
+
+## Composition
+
+Handlers compose — one block can combine all of the above:
+
+```ts checkout.ts -n
+async function checkout(cart: Cart) {
+  // !diff -
+  const total = cart.items.reduce((sum, i) => sum + i.price, 0)
+  // !diff +
+  // !mark[/subtotal/]
+  const subtotal = sum(cart.items.map((i) => i.price * i.quantity))
+  // !callout[/tax/] Tax is computed server-side since v2
+  const tax = await fetchTax(cart.address, subtotal)
+  return subtotal + tax
+}
+```

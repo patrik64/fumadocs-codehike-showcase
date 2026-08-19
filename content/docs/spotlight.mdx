@@ -1,0 +1,79 @@
+---
+title: Spotlight
+description: Click-driven code switching with the same step syntax as scrollycoding
+full: true
+---
+
+**Spotlight** uses the same `## !!steps` block syntax as
+[scrollycoding](/docs/scrollycoding), but steps are selected by
+**clicking** instead of scrolling — Code Hike's `Selectable` component
+simply gets `selectOn: ["click"]` instead of `["click", "scroll"]`. Token
+transitions still animate between versions.
+
+Click through three ways to define the same HTTP endpoint:
+
+<Spotlight>
+
+## !!steps Express
+
+The classic. A router instance, explicit request and response objects,
+and middleware for JSON parsing.
+
+```ts ! server.ts
+import express from "express"
+
+const app = express()
+app.use(express.json())
+
+app.post("/todos", async (req, res) => {
+  const todo = await db.todos.create({
+    title: req.body.title,
+  })
+  res.status(201).json(todo)
+})
+
+app.listen(3000)
+```
+
+## !!steps Hono
+
+Same shape, smaller API. Context replaces the request/response pair, and
+the app runs on any runtime that speaks fetch.
+
+```ts ! server.ts
+import { Hono } from "hono"
+
+const app = new Hono()
+
+app.post("/todos", async (c) => {
+  const body = await c.req.json()
+  const todo = await db.todos.create({
+    title: body.title,
+  })
+  return c.json(todo, 201)
+})
+
+export default app
+```
+
+## !!steps Fetch handler
+
+No framework at all: a plain function from `Request` to `Response`, the
+lowest common denominator of modern JavaScript servers.
+
+```ts ! server.ts
+export default {
+  async fetch(request: Request) {
+    if (request.method !== "POST") {
+      return new Response(null, { status: 405 })
+    }
+    const body = await request.json()
+    const todo = await db.todos.create({
+      title: body.title,
+    })
+    return Response.json(todo, { status: 201 })
+  },
+}
+```
+
+</Spotlight>

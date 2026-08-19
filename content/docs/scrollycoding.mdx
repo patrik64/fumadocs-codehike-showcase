@@ -1,0 +1,190 @@
+---
+title: Scrollycoding
+description: Scroll-driven code walkthroughs with animated token transitions
+full: true
+---
+
+This page demonstrates Code Hike's **scrollycoding** layout. As you scroll
+through the steps on the left, the code panel on the right updates — and
+Code Hike animates the individual tokens between versions. You can also
+click a step to jump to it.
+
+Let's build a tiny reactive signal store, step by step.
+
+<Scrollycoding>
+
+## !!steps Plain state
+
+We start with the simplest thing that could work: a plain variable and a
+render function. The problem is obvious — when `count` changes, nothing
+tells `render` to run again.
+
+```js ! store.js
+let count = 0
+
+function render() {
+  document.body.textContent = `Count: ${count}`
+}
+
+count = 1
+render()
+```
+
+## !!steps Wrap it in a signal
+
+We wrap the value in a `signal` function that exposes `get` and `set`.
+Now every read and write goes through a single place, which gives us a
+hook point for reactivity.
+
+```js ! store.js
+function signal(initial) {
+  let value = initial
+
+  return {
+    get: () => value,
+    set: (next) => {
+      value = next
+    },
+  }
+}
+
+const count = signal(0)
+
+function render() {
+  document.body.textContent = `Count: ${count.get()}`
+}
+```
+
+## !!steps Track subscribers
+
+Each signal keeps a set of subscribers. Anyone interested in the value
+can register a callback with `subscribe`.
+
+```js ! store.js
+function signal(initial) {
+  let value = initial
+  // !mark
+  const subscribers = new Set()
+
+  return {
+    get: () => value,
+    set: (next) => {
+      value = next
+    },
+    // !mark(1:3)
+    subscribe: (fn) => {
+      subscribers.add(fn)
+    },
+  }
+}
+
+const count = signal(0)
+```
+
+## !!steps Notify on change
+
+When the value changes, we notify every subscriber. Setting the signal
+now automatically re-runs anything that depends on it — no manual
+`render()` calls.
+
+```js ! store.js
+function signal(initial) {
+  let value = initial
+  const subscribers = new Set()
+
+  return {
+    get: () => value,
+    set: (next) => {
+      value = next
+      // !mark
+      subscribers.forEach((fn) => fn())
+    },
+    subscribe: (fn) => {
+      subscribers.add(fn)
+    },
+  }
+}
+
+const count = signal(0)
+count.subscribe(() => {
+  document.body.textContent = `Count: ${count.get()}`
+})
+
+count.set(1)
+```
+
+## !!steps Automatic subscriptions
+
+Subscribing by hand is tedious. An `effect` runs a function once while
+recording which signals it reads, and `get` subscribes the running
+effect automatically. This is the core trick behind fine-grained
+reactivity.
+
+```js ! store.js
+let activeEffect = null
+
+function effect(fn) {
+  activeEffect = fn
+  fn()
+  activeEffect = null
+}
+
+function signal(initial) {
+  let value = initial
+  const subscribers = new Set()
+
+  return {
+    get: () => {
+      // !mark(1:1)
+      if (activeEffect) subscribers.add(activeEffect)
+      return value
+    },
+    set: (next) => {
+      value = next
+      subscribers.forEach((fn) => fn())
+    },
+  }
+}
+
+const count = signal(0)
+
+effect(() => {
+  document.body.textContent = `Count: ${count.get()}`
+})
+
+count.set(1)
+```
+
+## !!steps Derived values
+
+Finally, `computed` composes signals into derived values: it is just a
+signal whose value is recalculated by an effect. Everything stays in
+sync automatically.
+
+```js ! store.js
+function computed(fn) {
+  const result = signal(fn())
+  effect(() => {
+    result.set(fn())
+  })
+  return result
+}
+
+const count = signal(0)
+const double = computed(() => count.get() * 2)
+
+effect(() => {
+  document.body.textContent =
+    `Count: ${count.get()}, double: ${double.get()}`
+})
+
+count.set(1)
+count.set(2)
+```
+
+</Scrollycoding>
+
+That's the whole pattern: `## !!steps` sections in MDX become steps, each
+step carries its own version of the code, and Code Hike's
+`SelectionProvider`, `Selectable` and `Selection` utilities connect
+scrolling to the sticky code panel.

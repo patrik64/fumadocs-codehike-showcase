@@ -1,0 +1,111 @@
+---
+title: Slideshow
+description: Step through code versions with prev/next controls and animated transitions
+---
+
+**Slideshow** is the third layout built on Code Hike's `## !!steps` block
+syntax. Where [scrollycoding](/docs/scrollycoding) advances on scroll and
+[spotlight](/docs/spotlight) on clicking a step, a slideshow is driven by
+**prev/next controls** — the caption below the code describes the current
+slide, and token transitions animate between versions.
+
+Step through the evolution of the same function, from callbacks to
+modern async code:
+
+<Slideshow>
+
+## !!steps Callbacks
+
+Where we started: every asynchronous result arrives through a callback,
+and each dependent request nests one level deeper.
+
+```js ! user-page.js
+function loadUserPage(userId, done) {
+  fetchUser(userId, (user) => {
+    fetchPosts(user.id, (posts) => {
+      fetchComments(posts[0].id, (comments) => {
+        done({ user, posts, comments })
+      })
+    })
+  })
+}
+```
+
+## !!steps Promises
+
+Promises flatten the pyramid into a chain: each `then` receives the
+previous result, and the chain itself is returned to the caller.
+
+```js ! user-page.js
+function loadUserPage(userId) {
+  return fetchUser(userId).then((user) =>
+    fetchPosts(user.id).then((posts) =>
+      fetchComments(posts[0].id).then(
+        (comments) => ({ user, posts, comments }),
+      ),
+    ),
+  )
+}
+```
+
+## !!steps Async / await
+
+`async` and `await` make the asynchronous flow read like synchronous
+code — same behavior, dramatically less ceremony.
+
+```js ! user-page.js
+async function loadUserPage(userId) {
+  const user = await fetchUser(userId)
+  const posts = await fetchPosts(user.id)
+  const comments = await fetchComments(posts[0].id)
+  return { user, posts, comments }
+}
+```
+
+## !!steps Error handling
+
+A plain `try`/`catch` now covers the entire flow — no per-callback error
+arguments, no `.catch` on every link of a chain.
+
+```js ! user-page.js
+async function loadUserPage(userId) {
+  try {
+    const user = await fetchUser(userId)
+    const posts = await fetchPosts(user.id)
+    const comments = await fetchComments(posts[0].id)
+    return { user, posts, comments }
+  } catch (error) {
+    // !mark
+    return { error: error.message }
+  }
+}
+```
+
+## !!steps Going parallel
+
+Independent requests don't need to wait for each other:
+`Promise.all` runs the posts and profile fetches concurrently.
+
+```js ! user-page.js
+async function loadUserPage(userId) {
+  try {
+    const user = await fetchUser(userId)
+    // !mark(1:4)
+    const [posts, profile] = await Promise.all([
+      fetchPosts(user.id),
+      fetchProfile(user.id),
+    ])
+    const comments = await fetchComments(posts[0].id)
+    return { user, posts, profile, comments }
+  } catch (error) {
+    return { error: error.message }
+  }
+}
+```
+
+</Slideshow>
+
+The component (`app/components/slideshow.tsx`) reuses the exact
+selection utilities from the other layouts — `SelectionProvider`,
+`Selection`, and the `useSelectedIndex` hook for the controls — so all
+three layouts share one mental model: steps in, selected index out.
