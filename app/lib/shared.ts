@@ -5,7 +5,7 @@ export const docsContentRoute = '/llms.mdx/docs';
 
 // the library this site showcases; used for the nav GitHub icon
 export const gitConfig = {
-  user: 'code-hike',
-  repo: 'codehike',
+  user: 'patrik64',
+  repo: 'fumadocs-codehike-showcase',
   branch: 'main',
 };
