@@ -141,8 +141,9 @@ return {
 
 ## Steps
 
-`<Steps>` draws the vertical rail; each `<Step>` is one numbered item. Useful
-for setup instructions that need code between the prose.
+`<Steps>` draws the vertical rail; each `<Step>` is one numbered item. Code
+fences sit inside a step like anything else — and they are still Code Hike
+blocks, so the rail and the highlighted code line up down the page.
 
 <Steps>
   <Step>
@@ -150,16 +151,46 @@ for setup instructions that need code between the prose.
     `fumadocs-mdx`.
   </Step>
   <Step>
+    **Describe what Code Hike should do.** One config object, shared by the
+    remark and recma plugins.
+
+```ts vite.config.ts
+const codeHikeConfig: CodeHikeConfig = {
+  // !callout[/code/] every fence in every page renders through <Code />
+  components: { code: 'Code' },
+  // highlighted at build time; colors come from the --ch-* CSS variables
+  syntaxHighlighting: { theme: 'github-from-css' },
+};
+```
+
+  </Step>
+  <Step>
     **Wire the plugins into the MDX pipeline.** In `vite.config.ts`, so the
     Node-only compiler plugins never reach the browser's module graph.
   </Step>
   <Step>
-    **Point `components.code` at your own component.** Every code fence in
-    every page then renders through it.
+    **Write the component the fences render through.** This is the whole
+    contract: a codeblock in, a `<Pre>` out.
+
+```tsx app/components/code.tsx
+export function Code({ codeblock }: { codeblock: HighlightedCode }) {
+  return <Pre code={codeblock} handlers={[callout, diff, mark]} />;
+}
+```
+
   </Step>
   <Step>
     **Copy the annotation handlers you want.** Code Hike ships none — the
-    files in `app/components/annotations/` started as copies from its docs.
+    files in `app/components/annotations/` started as copies from its docs,
+    and each one is a React component keyed to a comment name.
+
+```tsx app/components/annotations/mark.tsx
+export const mark: AnnotationHandler = {
+  name: 'mark',
+  Line: ({ annotation, ...props }) => <InnerLine merge={props} />,
+};
+```
+
   </Step>
 </Steps>
 
