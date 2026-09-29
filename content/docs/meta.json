@@ -1,6 +1,7 @@
 {
   "pages": [
     "index",
+    "fumadocs-ui",
     "scrollycoding",
     "spotlight",
     "slideshow",

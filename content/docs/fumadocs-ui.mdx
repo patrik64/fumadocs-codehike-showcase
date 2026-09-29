@@ -1,0 +1,282 @@
+---
+title: Fumadocs UI
+description: The components that ship with Fumadocs — cards, callouts, tabs, steps, accordions, file trees and more
+---
+
+Fumadocs is not only the frame around these pages. It ships a component
+library meant to be used *inside* MDX, and every block below is one of those
+components — registered once in `app/components/mdx.tsx` and then written as
+plain tags in the Markdown.
+
+Two things hold throughout: every code fence still renders through Code Hike,
+and every component follows the light/dark toggle in the nav.
+
+<Banner id="fumadocs-ui-banner" variant="rainbow" changeLayout={false}>
+  This strip is `<Banner />` — dismiss it and it stays dismissed.
+</Banner>
+
+## Cards
+
+`<Cards>` and `<Card>` build the linked grid fumadocs uses for its own
+"next steps" sections. An internal `href` is routed through React Router's
+`Link`, so navigation stays client-side.
+
+<Cards>
+  <Card
+    icon={<Scroll />}
+    href="/docs/scrollycoding"
+    title="Scrollycoding"
+    description="Scroll-driven walkthrough with animated token transitions"
+  />
+  <Card
+    icon={<Crosshair />}
+    href="/docs/spotlight"
+    title="Spotlight"
+    description="The same steps, selected by click instead of scroll"
+  />
+  <Card
+    icon={<Presentation />}
+    href="/docs/slideshow"
+    title="Slideshow"
+    description="Prev/next controls over the same step syntax"
+  />
+  <Card
+    icon={<Tags />}
+    href="/docs/annotations"
+    title="Annotations"
+    description="Marks, callouts, diffs and line numbers from comments"
+  />
+</Cards>
+
+## Callouts
+
+`<Callout />` comes from `fumadocs-ui/mdx` — no registration needed. It takes
+a `type` of `info`, `warn`, `error`, `success` or `idea`, an optional `title`,
+and an optional `icon` to override the default one.
+
+<Callout type="info" title="Build-time highlighting">
+  Code on these pages is highlighted while the site is built. No highlighter
+  is shipped to the browser.
+</Callout>
+
+<Callout type="warn" title="Plugin order matters">
+  `remarkCodeHike` has to run before fumadocs' remark plugins, or the
+  `## !!steps` headings inside a `<Scrollycoding>` block leak into the table
+  of contents.
+</Callout>
+
+<Callout type="idea">
+  Callouts accept full MDX, including `inline code` and [links](/docs).
+</Callout>
+
+## Tabs
+
+`<Tabs items={[...]}>` with a `<Tab>` per item. Note what happens inside a
+tab: the fenced code is still a Code Hike block, complete with the file-name
+header and copy button from `app/components/code.tsx`.
+
+<Tabs items={['pnpm', 'npm', 'bun']} label="Install">
+  <Tab value="pnpm">
+
+```sh
+pnpm add codehike
+```
+
+  </Tab>
+  <Tab value="npm">
+
+```sh
+npm install codehike
+```
+
+  </Tab>
+  <Tab value="bun">
+
+```sh
+bun add codehike
+```
+
+  </Tab>
+</Tabs>
+
+Annotations keep working in there too:
+
+<Tabs items={['Vite config', 'MDX components']}>
+  <Tab value="Vite config">
+
+```ts vite.config.ts
+fumadocsMdx({
+  globalOptions: {
+    mdxOptions: {
+      // !mark(1:2)
+      remarkPlugins: (v) => [[remarkCodeHike, codeHikeConfig], ...v],
+      recmaPlugins: [[recmaCodeHike, codeHikeConfig]],
+    },
+  },
+})
+```
+
+  </Tab>
+  <Tab value="MDX components">
+
+```tsx app/components/mdx.tsx
+return {
+  ...defaultMdxComponents,
+  // !callout[/Code/] `components.code: 'Code'` sends every fence here
+  Code,
+  Scrollycoding,
+  Tabs,
+  Steps,
+}
+```
+
+  </Tab>
+</Tabs>
+
+## Steps
+
+`<Steps>` draws the vertical rail; each `<Step>` is one numbered item. Useful
+for setup instructions that need code between the prose.
+
+<Steps>
+  <Step>
+    **Add the dependencies.** `codehike` alongside `fumadocs-core` and
+    `fumadocs-mdx`.
+  </Step>
+  <Step>
+    **Wire the plugins into the MDX pipeline.** In `vite.config.ts`, so the
+    Node-only compiler plugins never reach the browser's module graph.
+  </Step>
+  <Step>
+    **Point `components.code` at your own component.** Every code fence in
+    every page then renders through it.
+  </Step>
+  <Step>
+    **Copy the annotation handlers you want.** Code Hike ships none — the
+    files in `app/components/annotations/` started as copies from its docs.
+  </Step>
+</Steps>
+
+## Accordions
+
+`<Accordions>` with an `<Accordion title="...">` per row. Give a row an `id`
+and it gets a copyable deep link.
+
+<Accordions>
+  <Accordion title="Why is fumadocs-ui aliased to @fumadocs/base-ui?" id="base-ui">
+    This project pins `"fumadocs-ui": "npm:@fumadocs/base-ui@16.14.5"`, the
+    Base UI build of fumadocs UI. Imports read the same
+    (`fumadocs-ui/components/tabs`), so the alias is invisible in page code.
+  </Accordion>
+  <Accordion title="Why isn't fumadocs' CodeBlock here?" id="codeblock">
+    Because Code Hike owns the code fences on this site. `components.code`
+    rewrites every fence into our `<Code />`, so fumadocs' own `CodeBlock`
+    and `CodeBlockTabs` — which expect a `<pre>` child — never receive one.
+    Pick one owner for code blocks; here it is Code Hike.
+  </Accordion>
+  <Accordion title="Why isn't GithubInfo here?" id="github-info">
+    `<GithubInfo />` calls the GitHub API while rendering. Since every route
+    in this app is prerendered, that call would run during `pnpm build` and
+    an outage or a rate limit would break the build. It works — it just
+    doesn't belong in a demo that has to build on demand.
+  </Accordion>
+</Accordions>
+
+## File tree
+
+`<Files>`, `<Folder>` and `<File>`. This is the actual shape of this repo:
+
+<Files>
+  <Folder name="app" defaultOpen>
+    <Folder name="components" defaultOpen>
+      <Folder name="annotations">
+        <File name="callout.tsx" />
+        <File name="diff.tsx" />
+        <File name="line-numbers.tsx" />
+        <File name="mark.tsx" />
+        <File name="token-transitions.tsx" />
+      </Folder>
+      <File name="code.tsx" />
+      <File name="mdx.tsx" />
+      <File name="scrollycoding.tsx" />
+      <File name="slideshow.tsx" />
+      <File name="spotlight.tsx" />
+    </Folder>
+    <Folder name="lib">
+      <File name="source.ts" />
+    </Folder>
+    <File name="app.css" />
+  </Folder>
+  <Folder name="content">
+    <Folder name="docs">
+      <File name="fumadocs-ui.mdx" />
+      <File name="scrollycoding.mdx" />
+      <File name="meta.json" />
+    </Folder>
+  </Folder>
+  <File name="vite.config.ts" />
+</Files>
+
+## Type table
+
+`<TypeTable />` renders an API reference from a plain object. These are the
+real props of this site's `<Code />` component:
+
+<TypeTable
+  type={{
+    codeblock: {
+      type: 'HighlightedCode',
+      description:
+        'The fence, already highlighted at build time by Code Hike. Carries code, lang, meta and annotations.',
+      required: true,
+    },
+    'codeblock.meta': {
+      type: 'string',
+      description:
+        'Everything after the language in the fence. A word containing a dot becomes the file name in the header; -n turns on line numbers.',
+      default: '""',
+    },
+    'codeblock.lang': {
+      type: 'string',
+      description: 'Language of the fence, used as the header label when no file name is given.',
+    },
+  }}
+/>
+
+## Image zoom
+
+`<ImageZoom />` wraps an image so a click opens it full size — worth having
+on any diagram that carries detail. Click it.
+
+<ImageZoom
+  src="/pipeline.svg"
+  alt="MDX file, through remarkCodeHike and fumadocs-mdx, into your React components and out as static HTML"
+  width={1160}
+  height={300}
+  className="rounded-lg border"
+/>
+
+## Inline table of contents
+
+`<InlineTOC />` is the sidebar's table of contents, inlined and collapsible.
+It takes the items explicitly, so it can list a subset:
+
+<InlineTOC
+  items={[
+    { title: 'Cards', url: '#cards', depth: 2 },
+    { title: 'Callouts', url: '#callouts', depth: 2 },
+    { title: 'Tabs', url: '#tabs', depth: 2 },
+    { title: 'Steps', url: '#steps', depth: 2 },
+    { title: 'Accordions', url: '#accordions', depth: 2 },
+    { title: 'File tree', url: '#file-tree', depth: 2 },
+    { title: 'Type table', url: '#type-table', depth: 2 },
+    { title: 'Image zoom', url: '#image-zoom', depth: 2 },
+  ]}
+/>
+
+## What this page is really showing
+
+Fumadocs gives you the page and the furniture on it. Code Hike gives you the
+code blocks, headless, and expects you to bring the components. The two meet
+in `app/components/mdx.tsx`: one object, fumadocs' components and ours side by
+side, and from there on it is all just Markdown.
