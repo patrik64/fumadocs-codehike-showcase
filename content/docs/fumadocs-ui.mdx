@@ -17,8 +17,7 @@ and every component follows the light/dark toggle in the nav.
   changeLayout={false}
   className="relative my-6 rounded-lg"
 >
-  This strip is `<Banner />`. At the app root it sticks to the top of every
-  page; `className="relative"` keeps this one in the flow of the article.
+  This strip is `<Banner />` — see [Banner](#banner) below.
 </Banner>
 
 ## Cards
@@ -53,6 +52,42 @@ and every component follows the light/dark toggle in the nav.
     description="Marks, callouts, diffs and line numbers from comments"
   />
 </Cards>
+
+## Banner
+
+`<Banner />` is the site-wide notice bar: a new release, a deprecation, a
+conference. Two variants, `rainbow` and `normal`:
+
+<Banner id="fumadocs-ui-banner-normal" variant="normal" changeLayout={false} className="relative my-6 rounded-lg">
+  `variant="normal"` — a flat bar in the secondary colour.
+</Banner>
+
+Three things are worth knowing before you reach for it.
+
+It is **sticky by design**: the component ships as `sticky top-0 z-40`, which
+is what you want at the app root and not what you want inside an article,
+where it rides over the content as you scroll. Both banners on this page pass
+`className="relative"` to put them back in the flow.
+
+It **reserves layout space** unless you say otherwise. `changeLayout` defaults
+to `true`, which adjusts fumadocs' layout offsets to account for the bar —
+correct at the root, wrong for a banner sitting inside a page, so both of
+these pass `changeLayout={false}`.
+
+It **stays dismissed**. Give it an `id` and the close button writes to
+`localStorage`, so a reader who dismisses it does not see it again. That also
+means it can vanish mid-demo if you dismissed it earlier — clear the entry
+for `id` to bring it back.
+
+```tsx app/root.tsx
+// !callout[/id/] the close button remembers this id, so a dismissal sticks
+<Banner id="release-2-0" variant="rainbow">
+  Fumadocs 2.0 is out
+</Banner>
+```
+
+At the root you would drop `changeLayout` entirely and let the layout make
+room for the bar — the opposite of what both banners on this page do.
 
 ## Callouts
 
@@ -309,6 +344,7 @@ It takes the items explicitly, so it can list a subset:
 <InlineTOC
   items={[
     { title: 'Cards', url: '#cards', depth: 2 },
+    { title: 'Banner', url: '#banner', depth: 2 },
     { title: 'Callouts', url: '#callouts', depth: 2 },
     { title: 'Tabs', url: '#tabs', depth: 2 },
     { title: 'Steps', url: '#steps', depth: 2 },
