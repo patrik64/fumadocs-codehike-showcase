@@ -11,8 +11,14 @@ plain tags in the Markdown.
 Two things hold throughout: every code fence still renders through Code Hike,
 and every component follows the light/dark toggle in the nav.
 
-<Banner id="fumadocs-ui-banner" variant="rainbow" changeLayout={false}>
-  This strip is `<Banner />` — dismiss it and it stays dismissed.
+<Banner
+  id="fumadocs-ui-banner"
+  variant="rainbow"
+  changeLayout={false}
+  className="relative my-6 rounded-lg"
+>
+  This strip is `<Banner />`. At the app root it sticks to the top of every
+  page; `className="relative"` keeps this one in the flow of the article.
 </Banner>
 
 ## Cards
@@ -78,21 +84,21 @@ header and copy button from `app/components/code.tsx`.
 <Tabs items={['pnpm', 'npm', 'bun']} label="Install">
   <Tab value="pnpm">
 
-```sh
+```bash
 pnpm add codehike
 ```
 
   </Tab>
   <Tab value="npm">
 
-```sh
+```bash
 npm install codehike
 ```
 
   </Tab>
   <Tab value="bun">
 
-```sh
+```bash
 bun add codehike
 ```
 
@@ -253,7 +259,15 @@ on any diagram that carries detail. Click it.
   alt="MDX file, through remarkCodeHike and fumadocs-mdx, into your React components and out as static HTML"
   width={1160}
   height={300}
-  className="rounded-lg border"
+  className="rounded-lg border dark:hidden"
+/>
+
+<ImageZoom
+  src="/pipeline-dark.svg"
+  alt="MDX file, through remarkCodeHike and fumadocs-mdx, into your React components and out as static HTML"
+  width={1160}
+  height={300}
+  className="hidden rounded-lg border dark:block"
 />
 
 ## Inline table of contents

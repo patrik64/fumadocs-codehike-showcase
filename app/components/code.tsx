@@ -25,6 +25,12 @@ function CopyButton({ text }: { text: string }) {
   );
 }
 
+// Code Hike's highlighter normalizes `sh` and `bash` to `shellscript`, which
+// reads badly as a header label.
+const langLabels: Record<string, string> = {
+  shellscript: 'Terminal',
+};
+
 // All MDX code fences render through this component (see `components.code`
 // in the Code Hike config). The codeblock arrives already highlighted at
 // compile time, so no async work happens here.
@@ -40,7 +46,7 @@ export function Code({ codeblock }: { codeblock: HighlightedCode }) {
     <div className="not-prose my-6 overflow-hidden rounded-lg border bg-[var(--ch-16)]">
       <div className="flex items-center gap-2 border-b bg-fd-secondary/50 px-3 py-1.5">
         <span className="flex-1 font-mono text-xs text-fd-muted-foreground">
-          {filename ?? codeblock.lang}
+          {filename ?? langLabels[codeblock.lang] ?? codeblock.lang}
         </span>
         <CopyButton text={codeblock.code} />
       </div>
