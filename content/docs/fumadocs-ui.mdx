@@ -285,8 +285,24 @@ It takes the items explicitly, so it can list a subset:
     { title: 'File tree', url: '#file-tree', depth: 2 },
     { title: 'Type table', url: '#type-table', depth: 2 },
     { title: 'Image zoom', url: '#image-zoom', depth: 2 },
+    { title: 'Graph view', url: '#graph-view', depth: 2 },
   ]}
 />
+
+## Graph view
+
+`<GraphView />` is the one component here you don't import — it arrives via
+`npx @fumadocs/cli add graph-view`, which copies the source into your project.
+Same bargain as Code Hike's annotation handlers: you own the file afterwards.
+
+Every page is a node, every Markdown link between two pages is an edge, which
+is why the docs collection in `app/lib/source.ts` sets
+`extractLinkReferences: true` — that is what puts `extractedReferences` on each
+page for `buildGraph()` to walk.
+
+Drag a node, scroll to zoom, click one to go there.
+
+<PageGraph />
 
 ## What this page is really showing
 

@@ -11,6 +11,9 @@ export const docs = defineDocs({
     async: true,
     postprocess: {
       includeProcessedMarkdown: true,
+      // exposes `page.data.extractedReferences`, which build-graph.ts turns
+      // into the edges of the graph view
+      extractLinkReferences: true,
     },
   },
 });

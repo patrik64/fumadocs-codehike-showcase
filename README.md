@@ -27,7 +27,7 @@ pnpm start      # serve the production build
 | Page | What it shows |
 | --- | --- |
 | `/docs` | Intro + how the integration is wired |
-| `/docs/fumadocs-ui` | The fumadocs UI components, with Code Hike blocks inside them |
+| `/docs/fumadocs-ui` | The fumadocs UI components, with Code Hike blocks inside them, plus the graph view |
 | `/docs/scrollycoding` | Scroll-driven code walkthrough with animated token transitions |
 | `/docs/spotlight` | Click-driven variant of the same step syntax |
 | `/docs/slideshow` | Prev/next-controlled slides over the same step syntax |
@@ -58,7 +58,8 @@ pnpm start      # serve the production build
    `ImageZoom`, `InlineTOC`, `Banner`) sit in the same object as our Code
    Hike ones (`Code`, `Scrollycoding`, `Spotlight`, `Slideshow`). A code
    fence inside a fumadocs `<Tab>` is still a Code Hike block,
-   annotations included.
+   annotations included. `PageGraph` wraps the graph view so the MDX tag
+   needs no props.
 5. **Layouts** — `app/components/scrollycoding.tsx` and `spotlight.tsx`
    use Code Hike's `SelectionProvider`/`Selectable`/`Selection`
    utilities with the `token-transitions` handler for animated code
@@ -90,3 +91,29 @@ pnpm start      # serve the production build
 - The pipeline diagram in `public/` has light and dark variants swapped
   on fumadocs' `.dark` class, since an `<img>` can't read the site's
   theme.
+
+## Graph view
+
+`app/components/graph-view.tsx` and `app/lib/build-graph.ts` come from
+`npx @fumadocs/cli add graph-view` — the CLI copies the source into the
+project rather than exporting a component, so these files are ours to
+maintain. They bring `react-force-graph-2d` and `d3-force` with them, and
+`app/lib/source.ts` sets `extractLinkReferences: true` so each page
+carries the Markdown links that become the graph's edges.
+
+Three changes were needed to make the generated code work here:
+
+- **`buildGraph()` is async.** The generated version reads
+  `page.data.extractedReferences` synchronously, which only exists on an
+  eager collection. This repo sets `async: true`, so the references
+  arrive with `load()`.
+- **The canvas needs explicit dimensions.** Without them
+  `react-force-graph` sizes its canvas to the window — measurably larger
+  than the 600px container it is drawn into — so the component measures
+  the box with a `ResizeObserver` and passes the result.
+- **The d3 forces are configured in an effect**, not in the getter/setter
+  object the generated code passes as `ref`.
+
+`PageGraph` builds the graph in an effect rather than during render:
+`buildGraph()` loads every page's content, and the prerender should not
+wait on that for a canvas that is client-only anyway.

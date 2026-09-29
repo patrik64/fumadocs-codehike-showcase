@@ -8,6 +8,7 @@ import { Step, Steps } from 'fumadocs-ui/components/steps';
 import { Tab, Tabs } from 'fumadocs-ui/components/tabs';
 import { TypeTable } from 'fumadocs-ui/components/type-table';
 import { Crosshair, Presentation, Scroll, Tags } from 'lucide-react';
+import { PageGraph } from './page-graph';
 import type { MDXComponents } from 'mdx/types';
 import { Code } from './code';
 import { Scrollycoding } from './scrollycoding';
@@ -38,6 +39,8 @@ export function getMDXComponents(components?: MDXComponents) {
     Tab,
     Tabs,
     TypeTable,
+    // added by `npx @fumadocs/cli add graph-view`, wrapped so MDX can use it
+    PageGraph,
 
     // icons, for `<Card icon={...} />`
     Crosshair,
