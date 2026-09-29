@@ -6,7 +6,8 @@ working together — with Code Hike's **scrollycoding** feature as the
 centerpiece.
 
 - **Fumadocs** provides the docs framework: layout, sidebar, table of
-  contents, full-text search (Orama), light/dark theming. It runs on
+  contents, full-text search (Orama), light/dark theming, plus a set of
+  MDX components (cards, callouts, tabs, steps, file trees). It runs on
   React Router's Vite plugin in SPA mode with full prerendering, and
   content is compiled by `fumadocs-mdx`.
 - **Code Hike** renders every code block: compile-time syntax
@@ -26,6 +27,7 @@ pnpm start      # serve the production build
 | Page | What it shows |
 | --- | --- |
 | `/docs` | Intro + how the integration is wired |
+| `/docs/fumadocs-ui` | The fumadocs UI components, with Code Hike blocks inside them |
 | `/docs/scrollycoding` | Scroll-driven code walkthrough with animated token transitions |
 | `/docs/spotlight` | Click-driven variant of the same step syntax |
 | `/docs/slideshow` | Prev/next-controlled slides over the same step syntax |
@@ -50,12 +52,19 @@ pnpm start      # serve the production build
 3. **Custom code component** — `components.code: "Code"` routes every
    MDX code fence through `app/components/code.tsx` (header with file
    name, copy button, annotation handlers).
-4. **Layouts** — `app/components/scrollycoding.tsx` and `spotlight.tsx`
+4. **MDX component registry** — `app/components/mdx.tsx` is where the two
+   libraries meet: fumadocs' `defaultMdxComponents` and its opt-in
+   components (`Tabs`, `Steps`, `Accordions`, `Files`, `TypeTable`,
+   `ImageZoom`, `InlineTOC`, `Banner`) sit in the same object as our Code
+   Hike ones (`Code`, `Scrollycoding`, `Spotlight`, `Slideshow`). A code
+   fence inside a fumadocs `<Tab>` is still a Code Hike block,
+   annotations included.
+5. **Layouts** — `app/components/scrollycoding.tsx` and `spotlight.tsx`
    use Code Hike's `SelectionProvider`/`Selectable`/`Selection`
    utilities with the `token-transitions` handler for animated code
    morphing. Pages using them set `full: true` in frontmatter for a
    wide layout.
-5. **Annotation handlers** — `app/components/annotations/` contains the
+6. **Annotation handlers** — `app/components/annotations/` contains the
    handlers (`mark`, `callout`, `diff`, `line-numbers`,
    `token-transitions`), adapted from the Code Hike docs.
 
@@ -67,3 +76,17 @@ pnpm start      # serve the production build
 - `serve.json` deliberately has no SPA rewrite: every route is
   prerendered, and the catch-all rewrite in the original template
   shadowed the prerendered HTML files.
+- Code Hike owns the code fences, so fumadocs' own `CodeBlock` and
+  `CodeBlockTabs` are unused — they expect a `<pre>` child that
+  `components.code` never produces. Pick one owner for code blocks.
+- fumadocs' `GithubInfo` is deliberately not used: it calls the GitHub
+  API while rendering, which on a fully prerendered site means during
+  `pnpm build`, so a rate limit would break the build.
+- `Banner` ships as `sticky top-0 z-40`, which is right at the app root
+  but pins it over the article when used inside a page —
+  `/docs/fumadocs-ui` overrides it to `relative`.
+- Code Hike's highlighter normalizes `sh` and `bash` to `shellscript`;
+  `app/components/code.tsx` maps that to a friendlier header label.
+- The pipeline diagram in `public/` has light and dark variants swapped
+  on fumadocs' `.dark` class, since an `<img>` can't read the site's
+  theme.
