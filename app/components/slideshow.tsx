@@ -69,10 +69,11 @@ export function Slideshow(props: unknown) {
   return (
     <SelectionProvider className="not-prose my-6 overflow-hidden rounded-lg border">
       <div className="bg-(--ch-16)">
+        {/* no per-step `key` on the panel: a changing key would remount the
+            Pre, and token transitions only run when it updates in place */}
         <Selection
-          from={steps.map((step, i) => (
+          from={steps.map((step) => (
             <Pre
-              key={i}
               code={step.code}
               handlers={[tokenTransitions, mark]}
               className="m-0 min-h-88 overflow-auto px-4 py-4 text-[13px] leading-6"

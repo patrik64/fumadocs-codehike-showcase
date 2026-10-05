@@ -43,10 +43,12 @@ export function Spotlight(props: unknown) {
       <div className="w-full lg:w-[45%] lg:max-w-2xl">
         <div className="sticky top-20 overflow-hidden rounded-lg border bg-(--ch-16)">
           <div className="max-h-[calc(100vh-7rem)] overflow-auto">
+            {/* no per-step `key` on the panel: a changing key would remount
+                the Pre, and token transitions only run when it updates in
+                place */}
             <Selection
-              from={steps.map((step, i) => (
+              from={steps.map((step) => (
                 <Pre
-                  key={i}
                   code={step.code}
                   handlers={[tokenTransitions, mark]}
                   className="m-0 min-h-96 px-4 py-4 text-[13px] leading-6"

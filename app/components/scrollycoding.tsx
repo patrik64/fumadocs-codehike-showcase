@@ -59,9 +59,12 @@ export function Scrollycoding(props: unknown) {
       <div className="hidden w-[45%] max-w-2xl lg:block">
         <div className="sticky top-20 overflow-hidden rounded-lg border bg-(--ch-16)">
           <div className="max-h-[calc(100vh-7rem)] overflow-auto">
+            {/* no per-step `key` on the panel: a changing key would remount
+                the Pre, and token transitions only run when it updates in
+                place */}
             <Selection
-              from={steps.map((step, i) => (
-                <StepCode key={i} code={step.code} className="min-h-128" />
+              from={steps.map((step) => (
+                <StepCode code={step.code} className="min-h-128" />
               ))}
             />
           </div>
