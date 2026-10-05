@@ -1,6 +1,6 @@
 ---
 title: Annotations
-description: Code Hike annotations — marks, callouts, diffs, file names, line numbers, the copy button, focus, code mentions and token transitions
+description: Code Hike annotations — marks, callouts, diffs, file names, line numbers, the copy button, focus, fold, code mentions and token transitions
 ---
 
 Code Hike annotations are written as **comments inside the code block**.
@@ -240,6 +240,61 @@ export const focus: AnnotationHandler = {
       <InnerLine merge={props} data-focus={true} />
     </div>
   ),
+};
+```
+
+## Fold
+
+`!fold` hides part of a line behind an ellipsis until it is clicked. Given a
+regex with the `gm` flags, one comment at the top of the block folds every
+match, and a capture group narrows the fold to what is in the parentheses.
+Here `// !fold[/className="(.*?)"/gm]` makes this site's own `Code` markup
+readable again:
+
+```tsx app/components/code.tsx
+// !fold[/className="(.*?)"/gm]
+<div className="not-prose my-6 overflow-hidden rounded-lg border bg-(--ch-16)">
+  <div className="flex items-center gap-2 border-b bg-fd-secondary/50 px-3 py-1.5">
+    <span className="flex-1 font-mono text-xs text-fd-muted-foreground">
+      {filename ?? langLabels[codeblock.lang] ?? codeblock.lang}
+    </span>
+    <CopyButton text={codeblock.code} />
+  </div>
+  <Pre
+    code={codeblock}
+    handlers={handlers}
+    className="m-0 overflow-auto px-3 py-3 text-[13px] leading-6"
+  />
+</div>
+```
+
+Click any `...` to see what it hides. The fold is presentation only: the copy
+button still copies the complete code.
+
+The handler is an `Inline` component with one piece of state. This is the
+real file, with its own class names folded by the same comment:
+
+```tsx app/components/annotations/fold.tsx
+// !fold[/className="(.*?)"/gm]
+const InlineFold: AnnotationHandler['Inline'] = ({ children }) => {
+  const [folded, setFolded] = useState(true);
+  if (!folded) return children;
+
+  return (
+    <button
+      type="button"
+      aria-label="Expand"
+      className="rounded bg-fd-muted px-1 text-fd-muted-foreground hover:bg-fd-accent hover:text-fd-accent-foreground"
+      onClick={() => setFolded(false)}
+    >
+      ...
+    </button>
+  );
+};
+
+export const fold: AnnotationHandler = {
+  name: 'fold',
+  Inline: InlineFold,
 };
 ```
 
