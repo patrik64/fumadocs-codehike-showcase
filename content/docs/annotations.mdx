@@ -1,6 +1,6 @@
 ---
 title: Annotations
-description: Code Hike annotations — marks, callouts, diffs and line numbers
+description: Code Hike annotations — marks, callouts, diffs, line numbers and token transitions
 ---
 
 Code Hike annotations are written as **comments inside the code block**.
@@ -93,3 +93,60 @@ async function checkout(cart: Cart) {
   return subtotal + tax
 }
 ```
+
+## Token transitions
+
+`tokenTransitions` is a handler like the others, but it isn't attached to a
+line: it watches the whole block. When the code handed to `Pre` changes, the
+tokens both versions share slide to their new positions and the new ones
+fade in. Press the button to switch between two versions of one function:
+
+<CodeSwitcher>
+
+```scala !!versions
+object Main {
+  def factorial(n: Int): Int = {
+    if (n == 0) {
+      return 1
+    } else {
+      return n * factorial(n - 1)
+    }
+  }
+}
+```
+
+```python !!versions
+def factorial(n):
+    if n == 0:
+        return 1
+    else:
+        return n * factorial(n - 1)
+```
+
+</CodeSwitcher>
+
+Each fence marked `!!versions` is one version of the code. Stripped of its
+styling, the component is a `Pre` whose `code` prop changes on click:
+
+```tsx app/components/code-switcher.tsx
+const [index, setIndex] = useState(0);
+
+return (
+  <>
+    <Pre code={versions[index]} handlers={[tokenTransitions]} />
+    <button onClick={() => setIndex((index + 1) % versions.length)}>
+      Switch code
+    </button>
+  </>
+);
+```
+
+The handler does the rest. It renders `Pre` through a small class component
+that records where every token sits just before React updates the block,
+then animates each one from its old position to the new one with the Web
+Animations API. That is why the update has to happen in place: if the `Pre`
+is remounted, there is no "before" to animate from.
+
+The layouts on the next pages — [Scrollycoding](/docs/scrollycoding),
+[Spotlight](/docs/spotlight) and [Slideshow](/docs/slideshow) — hand the
+same handler to their code panels.

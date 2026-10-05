@@ -11,6 +11,7 @@ import { Crosshair, Presentation, Scroll, Tags } from 'lucide-react';
 import { PageGraph } from './page-graph';
 import type { MDXComponents } from 'mdx/types';
 import { Code } from './code';
+import { CodeSwitcher } from './code-switcher';
 import { Scrollycoding } from './scrollycoding';
 import { Slideshow } from './slideshow';
 import { Spotlight } from './spotlight';
@@ -20,6 +21,7 @@ export function getMDXComponents(components?: MDXComponents) {
     ...defaultMdxComponents,
     // Code Hike: `Code` matches `components.code` in the Code Hike config
     Code,
+    CodeSwitcher,
     Scrollycoding,
     Slideshow,
     Spotlight,
