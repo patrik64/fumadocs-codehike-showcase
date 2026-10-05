@@ -28,10 +28,10 @@ pnpm start      # serve the production build
 | --- | --- |
 | `/docs` | Intro + how the integration is wired |
 | `/docs/fumadocs-ui` | The fumadocs UI components, with Code Hike blocks inside them, plus the graph view |
+| `/docs/annotations` | `!mark`, `!callout`, `!diff`, line numbers, file names |
 | `/docs/scrollycoding` | Scroll-driven code walkthrough with animated token transitions |
 | `/docs/spotlight` | Click-driven variant of the same step syntax |
 | `/docs/slideshow` | Prev/next-controlled slides over the same step syntax |
-| `/docs/annotations` | `!mark`, `!callout`, `!diff`, line numbers, file names |
 
 ## How the integration works
 
