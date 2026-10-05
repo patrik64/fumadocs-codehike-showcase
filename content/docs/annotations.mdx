@@ -1,6 +1,6 @@
 ---
 title: Annotations
-description: Code Hike annotations — marks, callouts, diffs, line numbers, code mentions and token transitions
+description: Code Hike annotations — marks, callouts, diffs, line numbers, the copy button, code mentions and token transitions
 ---
 
 Code Hike annotations are written as **comments inside the code block**.
@@ -75,6 +75,47 @@ def fizzbuzz(n):
             print("Buzz")
         else:
             print(i)
+```
+
+## Copy button
+
+The icon at the right of every header above is a copy button. It isn't an
+annotation, just a small button rendered next to `Pre`, but it knows about
+them: it copies `codeblock.code`, the code after Code Hike has lifted the
+annotation comments out. Copy this block and paste it somewhere — the
+`// !mark` behind the highlighted line doesn't come along:
+
+```js
+function lorem(ipsum, dolor = 1) {
+  const sit = ipsum == null ? 0 : ipsum.sit
+  // !mark
+  dolor = sit - amet(dolor)
+  return sit ? consectetur(ipsum) : []
+}
+```
+
+Trimmed of its styling, the button is this:
+
+```tsx app/components/code.tsx
+function CopyButton({ text }: { text: string }) {
+  const [copied, setCopied] = useState(false);
+
+  return (
+    <button
+      aria-label="Copy to clipboard"
+      onClick={() => {
+        navigator.clipboard.writeText(text);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 1200);
+      }}
+    >
+      {copied ? <Check size={14} /> : <Copy size={14} />}
+    </button>
+  );
+}
+
+// !callout[/codeblock.code/] already free of annotation comments
+<CopyButton text={codeblock.code} />
 ```
 
 ## Composition
