@@ -12,9 +12,11 @@ export const mark: AnnotationHandler = {
     const color = annotation?.query || DEFAULT_COLOR;
     return (
       <div
+        // one `borderLeft`, not a transparent one plus an optional
+        // `borderLeftColor`: handed `undefined` for the colour, React clears it
+        // when it renders on the client, and the theme's border colour shows
         style={{
-          borderLeft: 'solid 2px transparent',
-          borderLeftColor: annotation ? color : undefined,
+          borderLeft: `solid 2px ${annotation ? color : 'transparent'}`,
           backgroundColor: annotation ? `rgb(from ${color} r g b / 0.13)` : undefined,
         }}
         className="flex"
