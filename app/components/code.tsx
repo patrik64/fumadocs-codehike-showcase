@@ -10,6 +10,7 @@ import { hover } from './annotations/hover';
 import { lineNumbers } from './annotations/line-numbers';
 import { mark } from './annotations/mark';
 import { tooltip } from './annotations/tooltip';
+import { wordWrap } from './annotations/word-wrap';
 
 export function CopyButton({ text }: { text: string }) {
   const [copied, setCopied] = useState(false);
@@ -54,6 +55,7 @@ export function CodeBody({ codeblock }: { codeblock: HighlightedCode }) {
 
   const handlers = [callout, diff, focus, fold, footnotes, hover, mark, tooltip];
   if (flags.includes('-n')) handlers.push(lineNumbers);
+  if (flags.includes('-w')) handlers.push(wordWrap);
 
   return (
     <>

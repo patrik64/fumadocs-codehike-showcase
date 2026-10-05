@@ -28,7 +28,7 @@ pnpm start      # serve the production build
 | --- | --- |
 | `/docs` | Intro + how the integration is wired |
 | `/docs/fumadocs-ui` | The fumadocs UI components, with Code Hike blocks inside them, plus the graph view |
-| `/docs/annotations` | `!mark`, `!callout`, `!diff`, `!focus`, `!fold`, `!ref` footnotes, `!tooltip`, line numbers, file names, copy button, code mentions, tabs, token transitions |
+| `/docs/annotations` | `!mark`, `!callout`, `!diff`, `!focus`, `!fold`, `!ref` footnotes, `!tooltip`, line numbers, word wrap, file names, copy button, code mentions, tabs, token transitions |
 | `/docs/scrollycoding` | Scroll-driven code walkthrough with animated token transitions |
 | `/docs/spotlight` | Click-driven variant of the same step syntax |
 | `/docs/slideshow` | Prev/next-controlled slides over the same step syntax |
@@ -63,7 +63,8 @@ pnpm start      # serve the production build
    fence inside a fumadocs `<Tab>` is still a Code Hike block,
    annotations included. `PageGraph` wraps the graph view so the MDX tag
    needs no props, and the `a` component is wrapped so
-   `[text](hover:name)` links become code mentions.
+   `[text](hover:name)` links become code mentions. `Resizable` is the
+   CSS `resize` box the word-wrap demo sits in.
 5. **Layouts** — `app/components/scrollycoding.tsx` and `spotlight.tsx`
    use Code Hike's `SelectionProvider`/`Selectable`/`Selection`
    utilities with the `token-transitions` handler for animated code
@@ -71,13 +72,15 @@ pnpm start      # serve the production build
    wide layout.
 6. **Annotation handlers** — `app/components/annotations/` contains the
    handlers (`mark`, `callout`, `diff`, `focus`, `fold`, `footnotes`,
-   `hover`, `line-numbers`, `token-transitions`, `tooltip`), adapted from
-   the Code Hike docs.
-   `app/components/code-switcher.tsx` is the smallest use of the last
-   one: a single `Pre` whose code changes on click. It carries `focus`
-   too, so two versions can differ only in what they focus. `hover` (code
-   mentions) keeps the active mention in React context rather than in
-   the per-name CSS rules the docs use, so any mention name works.
+   `hover`, `line-numbers`, `token-transitions`, `tooltip`, `word-wrap`),
+   adapted from the Code Hike docs. `line-numbers` and `word-wrap` are
+   opt-in per block, through `-n` and `-w` in the fence meta.
+   `app/components/code-switcher.tsx` is the smallest use of
+   `token-transitions`: a single `Pre` whose code changes on click. It
+   carries `focus` too, so two versions can differ only in what they
+   focus. `hover` (code mentions) keeps the active mention in React
+   context rather than in the per-name CSS rules the docs use, so any
+   mention name works.
 
 ## Notes
 

@@ -1,6 +1,6 @@
 ---
 title: Annotations
-description: Code Hike annotations — marks, callouts, diffs, file names, line numbers, the copy button, focus, fold, footnotes, tooltips, code mentions, tabs and token transitions
+description: Code Hike annotations — marks, callouts, diffs, file names, line numbers, word wrap, the copy button, focus, fold, footnotes, tooltips, code mentions, tabs and token transitions
 ---
 
 Code Hike annotations are written as **comments inside the code block**.
@@ -106,6 +106,64 @@ def fizzbuzz(n):
         else:
             print(i)
 ```
+
+## Word wrap
+
+`-w` is the other flag. A line too long for the block wraps instead of
+scrolling it sideways, and the rows it wraps onto keep the line's own
+indentation; they are the ones without a number. Drag the bottom-right
+corner of the block to change its width:
+
+<Resizable>
+
+```js -n -w
+function lorem(ipsum, dolor, sit) {
+  ipsum.amet(
+    { consectetur: [0, 1] },
+    {
+      adipiscing: elit.sed,
+      eiusmod: "lorem ipsum dolor sit amet",
+      sit,
+    },
+  )
+}
+```
+
+</Resizable>
+
+`white-space: pre-wrap` on the `pre` would be enough to wrap, but each
+wrapped row would start back at the left edge. So the handler also gives
+every line a hanging indent, as deep as the indentation Code Hike reports
+for it in `props.indentation`:
+
+```tsx app/components/annotations/word-wrap.tsx
+export const wordWrap: AnnotationHandler = {
+  name: 'word-wrap',
+  Pre: (props) => <InnerPre merge={props} className="whitespace-pre-wrap" />,
+  // A hanging indent as deep as the line's own indentation: the margin moves
+  // the whole line right and the negative `text-indent` pulls its first row
+  // back, so only the rows it wraps onto stay indented.
+  Line: (props) => (
+    <InnerLine merge={props}>
+      <div
+        style={{
+          textIndent: `${-props.indentation}ch`,
+          marginLeft: `${props.indentation}ch`,
+        }}
+      >
+        {props.children}
+      </div>
+    </InnerLine>
+  ),
+  // `text-indent` is inherited, and a token that is an inline block (the
+  // token-transitions handler makes them so) would apply it to itself
+  Token: (props) => <InnerToken merge={props} style={{ textIndent: 0 }} />,
+};
+```
+
+The Code Hike docs show this in a resizable panel from shadcn. `<Resizable>`
+is a plain `div` with CSS `resize: horizontal`, which is what puts the handle
+in the corner.
 
 ## Copy button
 
