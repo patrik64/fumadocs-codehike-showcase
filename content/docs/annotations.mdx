@@ -1,6 +1,6 @@
 ---
 title: Annotations
-description: Code Hike annotations — marks, callouts, diffs, file names, line numbers, the copy button, focus, fold, footnotes, code mentions, tabs and token transitions
+description: Code Hike annotations — marks, callouts, diffs, file names, line numbers, the copy button, focus, fold, footnotes, tooltips, code mentions, tabs and token transitions
 ---
 
 Code Hike annotations are written as **comments inside the code block**.
@@ -339,6 +339,79 @@ export function numberFootnotes(codeblock: HighlightedCode) {
 
   return { code: { ...codeblock, annotations }, notes };
 }
+```
+
+## Tooltip
+
+`!tooltip[/regex/] text` tucks a note behind a token. Hover the dashed word,
+or click it:
+
+```js
+// !tooltip[/lorem/] A made-up library, here only for the example
+import { read, write } from "lorem"
+```
+
+The note doesn't have to be plain text. Inside `<CodeWithTooltips>` the text
+after the regex names a `## !!tooltips` section instead, and whatever MDX
+that section holds becomes the tooltip, another code block included:
+
+<CodeWithTooltips>
+
+```js !code
+// !tooltip[/lorem/] description
+function lorem(ipsum, dolor = 1) {
+  const sit = ipsum == null ? 0 : ipsum.sit
+  dolor = sit - amet(dolor)
+  // !tooltip[/consectetur/] inspect
+  return sit ? consectetur(ipsum) : []
+}
+```
+
+## !!tooltips description
+
+**Hello world**
+
+Lorem ipsum **dolor** sit amet `consectetur`.
+
+Adipiscing elit _sed_ do eiusmod.
+
+## !!tooltips inspect
+
+```js
+function consectetur(ipsum) {
+  const { a, b } = ipsum
+  return a + b
+}
+```
+
+</CodeWithTooltips>
+
+`CodeWithTooltips` matches each annotation to a section by name and hands the
+section's content to the handler as `data.children`. The popup is Fumadocs
+UI's popover, where the Code Hike docs use shadcn's tooltip, so its content
+can hold links and buttons and stays open while you use them.
+
+```tsx app/components/annotations/tooltip.tsx
+// !fold[/className="(.*?)"/gm]
+export const tooltip: AnnotationHandler = {
+  name: 'tooltip',
+  Inline: ({ children, annotation }) => (
+    <Popover>
+      <PopoverTrigger
+        openOnHover
+        className="cursor-pointer underline decoration-dashed underline-offset-4"
+      >
+        {children}
+      </PopoverTrigger>
+      <PopoverContent
+        align="start"
+        className="flex w-fit max-w-[min(24rem,98vw)] flex-col gap-2 [&_p_code]:rounded [&_p_code]:bg-fd-muted [&_p_code]:px-1 [&_p_code]:font-mono [&_p_code]:text-[0.85em] [&>.not-prose]:my-0"
+      >
+        {annotation.data?.children ?? annotation.query}
+      </PopoverContent>
+    </Popover>
+  ),
+};
 ```
 
 ## Code mentions

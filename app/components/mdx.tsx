@@ -15,6 +15,7 @@ import { HoverContainer, HoverMention } from './annotations/hover';
 import { Code } from './code';
 import { CodeSwitcher } from './code-switcher';
 import { CodeWithTabs } from './code-tabs';
+import { CodeWithTooltips } from './code-tooltips';
 import { Scrollycoding } from './scrollycoding';
 import { Slideshow } from './slideshow';
 import { Spotlight } from './spotlight';
@@ -39,6 +40,7 @@ export function getMDXComponents(components?: MDXComponents) {
     Code,
     CodeSwitcher,
     CodeWithTabs,
+    CodeWithTooltips,
     HoverContainer,
     Scrollycoding,
     Slideshow,
