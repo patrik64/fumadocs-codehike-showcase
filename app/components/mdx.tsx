@@ -14,6 +14,7 @@ import type { ComponentProps } from 'react';
 import { HoverContainer, HoverMention } from './annotations/hover';
 import { Code } from './code';
 import { CodeSwitcher } from './code-switcher';
+import { CodeWithTabs } from './code-tabs';
 import { Scrollycoding } from './scrollycoding';
 import { Slideshow } from './slideshow';
 import { Spotlight } from './spotlight';
@@ -37,6 +38,7 @@ export function getMDXComponents(components?: MDXComponents) {
     // Code Hike: `Code` matches `components.code` in the Code Hike config
     Code,
     CodeSwitcher,
+    CodeWithTabs,
     HoverContainer,
     Scrollycoding,
     Slideshow,
