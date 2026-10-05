@@ -20,7 +20,7 @@ export function PageGraph() {
     };
   }, []);
 
-  if (!graph) return <div className="h-[600px] rounded-xl border bg-fd-background" aria-hidden />;
+  if (!graph) return <div className="h-150 rounded-xl border bg-fd-background" aria-hidden />;
 
   return <GraphView graph={graph} />;
 }

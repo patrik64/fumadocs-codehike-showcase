@@ -43,7 +43,7 @@ export function Code({ codeblock }: { codeblock: HighlightedCode }) {
   if (showLineNumbers) handlers.push(lineNumbers);
 
   return (
-    <div className="not-prose my-6 overflow-hidden rounded-lg border bg-[var(--ch-16)]">
+    <div className="not-prose my-6 overflow-hidden rounded-lg border bg-(--ch-16)">
       <div className="flex items-center gap-2 border-b bg-fd-secondary/50 px-3 py-1.5">
         <span className="flex-1 font-mono text-xs text-fd-muted-foreground">
           {filename ?? langLabels[codeblock.lang] ?? codeblock.lang}
