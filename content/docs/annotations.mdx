@@ -1,6 +1,6 @@
 ---
 title: Annotations
-description: Code Hike annotations — marks, callouts, diffs, file names, line numbers, the copy button, focus, fold, code mentions and token transitions
+description: Code Hike annotations — marks, callouts, diffs, file names, line numbers, the copy button, focus, fold, footnotes, code mentions and token transitions
 ---
 
 Code Hike annotations are written as **comments inside the code block**.
@@ -261,10 +261,11 @@ readable again:
     <CopyButton text={codeblock.code} />
   </div>
   <Pre
-    code={codeblock}
+    code={code}
     handlers={handlers}
     className="m-0 overflow-auto px-3 py-3 text-[13px] leading-6"
   />
+  <Footnotes notes={notes} />
 </div>
 ```
 
@@ -296,6 +297,50 @@ export const fold: AnnotationHandler = {
   name: 'fold',
   Inline: InlineFold,
 };
+```
+
+## Footnotes
+
+`!ref` attaches a note to a line without putting it in the code: the line
+gets a number, and the notes are listed under the block.
+
+```rb
+# !ref Library import
+require 'sinatra'
+
+# !ref URL mapping
+get '/hi' do
+  "Hello World!"
+end
+```
+
+This is the one annotation a handler can't finish alone, because something
+has to count the notes and print the list. `Code` does that with
+`numberFootnotes` and the `<Footnotes>` line in the markup above. The digits
+are drawn by CSS, so they stay out of anything you select and copy.
+
+```tsx app/components/annotations/footnotes.tsx
+// !fold[/className="(.*?)"/gm]
+export const footnotes: AnnotationHandler = {
+  name: 'ref',
+  AnnotatedLine: ({ annotation, ...props }) => (
+    <div className="flex gap-2">
+      <InnerLine merge={props} />
+      <Marker n={annotation.data.n} />
+    </div>
+  ),
+};
+
+export function numberFootnotes(codeblock: HighlightedCode) {
+  const notes: string[] = [];
+  const annotations = codeblock.annotations.map((annotation) => {
+    if (annotation.name !== 'ref') return annotation;
+    notes.push(annotation.query);
+    return { ...annotation, data: { ...annotation.data, n: notes.length } };
+  });
+
+  return { code: { ...codeblock, annotations }, notes };
+}
 ```
 
 ## Code mentions

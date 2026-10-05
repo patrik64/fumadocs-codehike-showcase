@@ -5,6 +5,7 @@ import { callout } from './annotations/callout';
 import { diff } from './annotations/diff';
 import { focus } from './annotations/focus';
 import { fold } from './annotations/fold';
+import { Footnotes, footnotes, numberFootnotes } from './annotations/footnotes';
 import { hover } from './annotations/hover';
 import { lineNumbers } from './annotations/line-numbers';
 import { mark } from './annotations/mark';
@@ -41,8 +42,9 @@ export function Code({ codeblock }: { codeblock: HighlightedCode }) {
   const flags = codeblock.meta.split(' ').filter(Boolean);
   const filename = flags.find((f) => f.includes('.'));
   const showLineNumbers = flags.includes('-n');
+  const { code, notes } = numberFootnotes(codeblock);
 
-  const handlers = [callout, diff, focus, fold, hover, mark];
+  const handlers = [callout, diff, focus, fold, footnotes, hover, mark];
   if (showLineNumbers) handlers.push(lineNumbers);
 
   return (
@@ -54,10 +56,11 @@ export function Code({ codeblock }: { codeblock: HighlightedCode }) {
         <CopyButton text={codeblock.code} />
       </div>
       <Pre
-        code={codeblock}
+        code={code}
         handlers={handlers}
         className="m-0 overflow-auto px-3 py-3 text-[13px] leading-6"
       />
+      <Footnotes notes={notes} />
     </div>
   );
 }
