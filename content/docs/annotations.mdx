@@ -1,6 +1,6 @@
 ---
 title: Annotations
-description: Code Hike annotations — marks, callouts, diffs, file names, line numbers, the copy button, code mentions and token transitions
+description: Code Hike annotations — marks, callouts, diffs, file names, line numbers, the copy button, focus, code mentions and token transitions
 ---
 
 Code Hike annotations are written as **comments inside the code block**.
@@ -161,6 +161,86 @@ async function checkout(cart: Cart) {
   const tax = await fetchTax(cart.address, subtotal)
   return subtotal + tax
 }
+```
+
+## Focus
+
+`!focus` is `!mark` turned inside out: instead of lighting the lines it
+covers, it dims every other line of the block.
+
+```js
+function lorem(ipsum, dolor = 1) {
+  const sit = ipsum == null ? 0 : ipsum.sit
+  // !focus(1:2)
+  dolor = sit - amet(dolor)
+  return sit ? consectetur(ipsum) : []
+}
+```
+
+It has a second job when a block is shorter than its code: scrolling the
+focused lines into view. The two versions below are the same code with the
+comment moved from `lorem` to `dolor`, inside the switcher that
+[Token transitions](#token-transitions) explains. Press the button:
+
+<CodeSwitcher label="Move focus">
+
+```js !!versions
+// !focus(1:5)
+function lorem(ipsum, dolor = 1) {
+  const sit = ipsum == null ? 0 : ipsum.sit
+  dolor = sit - amet(dolor)
+  return sit ? consectetur(ipsum) : []
+}
+
+function ipsum(ipsum, dolor = 1) {
+  return dolor
+}
+
+function dolor(ipsum, dolor = 1) {
+  const sit = ipsum == null ? 0 : ipsum.sit
+  dolor = sit - amet(dolor)
+  return sit ? consectetur(ipsum) : []
+}
+```
+
+```js !!versions
+function lorem(ipsum, dolor = 1) {
+  const sit = ipsum == null ? 0 : ipsum.sit
+  dolor = sit - amet(dolor)
+  return sit ? consectetur(ipsum) : []
+}
+
+function ipsum(ipsum, dolor = 1) {
+  return dolor
+}
+
+// !focus(1:5)
+function dolor(ipsum, dolor = 1) {
+  const sit = ipsum == null ? 0 : ipsum.sit
+  dolor = sit - amet(dolor)
+  return sit ? consectetur(ipsum) : []
+}
+```
+
+</CodeSwitcher>
+
+Two jobs, two parts. `Line` and `AnnotatedLine` do the dimming, and a custom
+`Pre` measures the focused lines after every render and scrolls when one of
+them is out of sight:
+
+```tsx app/components/annotations/focus.tsx
+export const focus: AnnotationHandler = {
+  name: 'focus',
+  onlyIfAnnotated: true,
+  // !mark
+  PreWithRef: PreWithFocus,
+  Line: (props) => <InnerLine merge={props} className="opacity-50 data-[focus]:opacity-100" />,
+  AnnotatedLine: (props) => (
+    <div className="-mx-2 bg-fd-foreground/5 px-2">
+      <InnerLine merge={props} data-focus={true} />
+    </div>
+  ),
+};
 ```
 
 ## Code mentions

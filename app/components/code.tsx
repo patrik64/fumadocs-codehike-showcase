@@ -3,6 +3,7 @@ import { Check, Copy } from 'lucide-react';
 import { useState } from 'react';
 import { callout } from './annotations/callout';
 import { diff } from './annotations/diff';
+import { focus } from './annotations/focus';
 import { hover } from './annotations/hover';
 import { lineNumbers } from './annotations/line-numbers';
 import { mark } from './annotations/mark';
@@ -40,7 +41,7 @@ export function Code({ codeblock }: { codeblock: HighlightedCode }) {
   const filename = flags.find((f) => f.includes('.'));
   const showLineNumbers = flags.includes('-n');
 
-  const handlers = [callout, diff, hover, mark];
+  const handlers = [callout, diff, focus, hover, mark];
   if (showLineNumbers) handlers.push(lineNumbers);
 
   return (

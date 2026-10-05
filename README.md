@@ -28,7 +28,7 @@ pnpm start      # serve the production build
 | --- | --- |
 | `/docs` | Intro + how the integration is wired |
 | `/docs/fumadocs-ui` | The fumadocs UI components, with Code Hike blocks inside them, plus the graph view |
-| `/docs/annotations` | `!mark`, `!callout`, `!diff`, line numbers, file names, copy button, code mentions, token transitions |
+| `/docs/annotations` | `!mark`, `!callout`, `!diff`, `!focus`, line numbers, file names, copy button, code mentions, token transitions |
 | `/docs/scrollycoding` | Scroll-driven code walkthrough with animated token transitions |
 | `/docs/spotlight` | Click-driven variant of the same step syntax |
 | `/docs/slideshow` | Prev/next-controlled slides over the same step syntax |
@@ -67,10 +67,11 @@ pnpm start      # serve the production build
    morphing. Pages using them set `full: true` in frontmatter for a
    wide layout.
 6. **Annotation handlers** — `app/components/annotations/` contains the
-   handlers (`mark`, `callout`, `diff`, `hover`, `line-numbers`,
+   handlers (`mark`, `callout`, `diff`, `focus`, `hover`, `line-numbers`,
    `token-transitions`), adapted from the Code Hike docs.
    `app/components/code-switcher.tsx` is the smallest use of the last
-   one: a single `Pre` whose code changes on click. `hover` (code
+   one: a single `Pre` whose code changes on click. It carries `focus`
+   too, so two versions can differ only in what they focus. `hover` (code
    mentions) keeps the active mention in React context rather than in
    the per-name CSS rules the docs use, so any mention name works.
 
