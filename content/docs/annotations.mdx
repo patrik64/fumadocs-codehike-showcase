@@ -1,6 +1,6 @@
 ---
 title: Annotations
-description: Code Hike annotations — marks, callouts, diffs, line numbers and token transitions
+description: Code Hike annotations — marks, callouts, diffs, line numbers, code mentions and token transitions
 ---
 
 Code Hike annotations are written as **comments inside the code block**.
@@ -93,6 +93,36 @@ async function checkout(cart: Cart) {
   return subtotal + tax
 }
 ```
+
+## Code mentions
+
+`!hover name` works the other way round: the comment only names a line, and
+a link in the prose — `[base case](hover:one)` — points at it. Hover a
+mention, or tab to it, and every other line of the block dims:
+
+<HoverContainer>
+
+The [base case](hover:one) returns 1 without calling anything.
+
+```cpp
+int factorial(int n) {
+  if (n == 0) {
+    // !hover one
+    return 1;
+  } else {
+    // !hover two
+    return n * factorial(n - 1);
+  }
+}
+```
+
+The [recursive case](hover:two) multiplies `n` by the factorial of `n - 1`.
+
+</HoverContainer>
+
+Three small pieces make this work: `<HoverContainer>` remembers which mention
+is active, the `a` component in `app/components/mdx.tsx` turns `hover:` links
+into mentions, and the `hover` handler dims the lines that weren't named.
 
 ## Token transitions
 

@@ -10,18 +10,34 @@ import { TypeTable } from 'fumadocs-ui/components/type-table';
 import { Crosshair, Presentation, Scroll, Tags } from 'lucide-react';
 import { PageGraph } from './page-graph';
 import type { MDXComponents } from 'mdx/types';
+import type { ComponentProps } from 'react';
+import { HoverContainer, HoverMention } from './annotations/hover';
 import { Code } from './code';
 import { CodeSwitcher } from './code-switcher';
 import { Scrollycoding } from './scrollycoding';
 import { Slideshow } from './slideshow';
 import { Spotlight } from './spotlight';
 
+const DefaultLink = defaultMdxComponents.a;
+
+// `[text](hover:name)` is a code mention rather than a link (see
+// annotations/hover.tsx); every other href goes to fumadocs' own link
+function MdxLink(props: ComponentProps<typeof DefaultLink>) {
+  if (props.href?.startsWith('hover:')) {
+    return <HoverMention name={props.href.slice('hover:'.length)}>{props.children}</HoverMention>;
+  }
+
+  return <DefaultLink {...props} />;
+}
+
 export function getMDXComponents(components?: MDXComponents) {
   return {
     ...defaultMdxComponents,
+    a: MdxLink,
     // Code Hike: `Code` matches `components.code` in the Code Hike config
     Code,
     CodeSwitcher,
+    HoverContainer,
     Scrollycoding,
     Slideshow,
     Spotlight,
