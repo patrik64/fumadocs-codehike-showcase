@@ -45,7 +45,7 @@ export const focus: AnnotationHandler = {
   name: 'focus',
   onlyIfAnnotated: true,
   PreWithRef: PreWithFocus,
-  Line: (props) => <InnerLine merge={props} className="opacity-50 data-[focus]:opacity-100" />,
+  Line: (props) => <InnerLine merge={props} className="opacity-50 data-focus:opacity-100" />,
   AnnotatedLine: (props) => (
     <div className="-mx-2 bg-fd-foreground/5 px-2">
       <InnerLine merge={props} data-focus={true} />

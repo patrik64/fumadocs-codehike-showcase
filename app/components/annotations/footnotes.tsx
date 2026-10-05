@@ -6,7 +6,7 @@ function Marker({ n }: { n: number }) {
   return (
     <span
       data-value={n}
-      className="inline-block size-4 shrink-0 self-center rounded-full border border-fd-muted-foreground/60 text-center font-mono text-[10px] leading-[14px] text-fd-muted-foreground after:content-[attr(data-value)]"
+      className="inline-block size-4 shrink-0 self-center rounded-full border border-fd-muted-foreground/60 text-center font-mono text-[10px] leading-3.5 text-fd-muted-foreground after:content-[attr(data-value)]"
     />
   );
 }

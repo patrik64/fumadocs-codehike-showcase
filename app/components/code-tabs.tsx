@@ -42,7 +42,7 @@ export function CodeWithTabs(props: unknown) {
         <TabsContent
           key={i}
           value={String(i)}
-          className="rounded-none bg-transparent p-0 data-[ending-style]:hidden"
+          className="rounded-none bg-transparent p-0 data-ending-style:hidden"
         >
           <CodeBody codeblock={tab} />
         </TabsContent>
