@@ -53,9 +53,15 @@ export function CodeBody({ codeblock }: { codeblock: HighlightedCode }) {
   const flags = codeblock.meta.split(' ').filter(Boolean);
   const { code, notes } = numberFootnotes(codeblock);
 
-  const handlers = [callout, diff, focus, fold, footnotes, hover, mark, tooltip];
+  // Handlers nest in list order, the first one outermost, so this is also the
+  // order of the boxes around a line. `mark` draws the coloured row; the line
+  // number, the diff sign and the code sit inside it, in that order; `callout`
+  // is last because it adds its bubble to the code itself.
+  const handlers = [focus, fold, footnotes, hover, mark, tooltip];
   if (flags.includes('-n')) handlers.push(lineNumbers);
+  handlers.push(diff);
   if (flags.includes('-w')) handlers.push(wordWrap);
+  handlers.push(callout);
 
   return (
     <>

@@ -19,4 +19,6 @@ export const diff: AnnotationHandler = {
   ),
 };
 
-export const diffHandlers: AnnotationHandler[] = [diff, mark];
+// `diff` only adds the sign; the colour is `mark`'s, which has to come first so
+// that its row is the one around the sign
+export const diffHandlers: AnnotationHandler[] = [mark, diff];

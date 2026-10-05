@@ -209,7 +209,7 @@ const codeHikeConfig: CodeHikeConfig = {
 
 ```tsx app/components/code.tsx
 export function Code({ codeblock }: { codeblock: HighlightedCode }) {
-  return <Pre code={codeblock} handlers={[callout, diff, mark]} />;
+  return <Pre code={codeblock} handlers={[mark, diff, callout]} />;
 }
 ```
 
