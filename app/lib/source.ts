@@ -10,7 +10,6 @@ export const docs = defineDocs({
   docs: {
     async: true,
     postprocess: {
-      includeProcessedMarkdown: true,
       // exposes `page.data.extractedReferences`, which build-graph.ts turns
       // into the edges of the graph view
       extractLinkReferences: true,
@@ -32,10 +31,17 @@ export function getPageMarkdownUrl(page: (typeof source)['$inferPage']) {
   };
 }
 
+// Raw source rather than fumadocs' processed markdown: remarkCodeHike runs
+// before fumadocs' plugins (see vite.config.ts), so by the time the processed
+// markdown is serialized every code fence has become a `<Code />` element whose
+// code lives in a prop, and `## !!steps` sections have become `<slot>`
+// wrappers — the processed text contains no code at all. Only ever called from
+// the prerendered llms routes, so reading the file from disk is fine.
 export async function getLLMText(page: (typeof source)['$inferPage']) {
-  const processed = await page.data.getText('processed');
+  const raw = await page.data.getText('raw');
+  const body = raw.replace(/^---\n[\s\S]*?\n---\n/, '').trim();
 
   return `# ${page.data.title} (${page.url})
 
-${processed}`;
+${body}`;
 }
