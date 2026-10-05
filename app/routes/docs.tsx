@@ -6,12 +6,14 @@ import {
   DocsPage,
   DocsTitle,
   MarkdownCopyButton,
-  ViewOptionsPopover,
 } from 'fumadocs-ui/layouts/docs/page';
+import { buttonVariants } from 'fumadocs-ui/components/ui/button';
 import { docs, getPageMarkdownUrl, source } from '@/lib/source';
 import { baseOptions } from '@/lib/layout.shared';
 import { useFumadocsLoader } from 'fumadocs-core/source/client';
 import { useMDXComponents } from '@/components/mdx';
+import { cn } from '@/lib/cn';
+import { TextIcon } from 'lucide-react';
 import { use } from 'react';
 
 export async function loader({ params }: Route.LoaderArgs) {
@@ -40,9 +42,23 @@ function Content({ path, markdownUrl }: { path: string; markdownUrl: string }) {
       <meta name="description" content={page.description} />
       <DocsTitle>{page.title}</DocsTitle>
       <DocsDescription>{page.description}</DocsDescription>
-      <div className="flex flex-row gap-2 items-center border-b -mt-4 pb-6">
+      <div className="flex flex-row flex-wrap gap-2 items-center border-b -mt-4 pb-6">
         <MarkdownCopyButton markdownUrl={markdownUrl} />
-        <ViewOptionsPopover markdownUrl={markdownUrl} />
+        {/* a plain <a>, not a router <Link>: the Markdown is a prerendered
+            resource route, so it needs a document request, and the styling
+            mirrors MarkdownCopyButton so the two read as a pair */}
+        <a
+          href={markdownUrl}
+          target="_blank"
+          rel="noreferrer noopener"
+          className={cn(
+            buttonVariants({ color: 'secondary', size: 'sm' }),
+            'gap-2 [&_svg]:size-3.5 [&_svg]:text-fd-muted-foreground',
+          )}
+        >
+          <TextIcon />
+          View as Markdown
+        </a>
       </div>
       <DocsBody>
         <Mdx components={useMDXComponents()} />
