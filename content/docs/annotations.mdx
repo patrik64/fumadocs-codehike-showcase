@@ -1,6 +1,6 @@
 ---
 title: Annotations
-description: Code Hike annotations — marks, callouts, diffs, line numbers, the copy button, code mentions and token transitions
+description: Code Hike annotations — marks, callouts, diffs, file names, line numbers, the copy button, code mentions and token transitions
 ---
 
 Code Hike annotations are written as **comments inside the code block**.
@@ -59,10 +59,38 @@ function lorem(ipsum, dolor = 1) {
 }
 ```
 
-## Line numbers and file names
+## File name
 
-The fence meta drives presentation too: a token with a dot becomes the
-file name in the header, and the `-n` flag turns on line numbers.
+The fence meta drives presentation too. Put a file name after the language
+(`js index.js`) and it replaces the language label in the header:
+
+```js index.js
+function lorem(ipsum, dolor = 1) {
+  const sit = ipsum == null ? 0 : 1
+  dolor = sit - amet(dolor)
+  return sit ? consectetur(ipsum) : []
+}
+```
+
+`Code` takes the first word of the meta that contains a dot as the name, and
+falls back to the language when there is none:
+
+```tsx app/components/code.tsx
+const flags = codeblock.meta.split(' ').filter(Boolean);
+// !mark
+const filename = flags.find((f) => f.includes('.'));
+
+<span>{filename ?? langLabels[codeblock.lang] ?? codeblock.lang}</span>
+```
+
+The Code Hike docs print the whole meta string as the title. Picking out one
+word instead leaves room for flags beside it, which is how the next section
+turns on line numbers.
+
+## Line numbers
+
+Add `-n` to the meta and the `line-numbers` handler joins the block. It sits
+next to a file name without getting in its way:
 
 ```py fizzbuzz.py -n
 def fizzbuzz(n):
