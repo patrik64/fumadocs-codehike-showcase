@@ -68,14 +68,14 @@ export function Slideshow(props: unknown) {
 
   return (
     <SelectionProvider className="not-prose my-6 overflow-hidden rounded-lg border">
-      <div className="bg-[var(--ch-16)]">
+      <div className="bg-(--ch-16)">
         <Selection
           from={steps.map((step, i) => (
             <Pre
               key={i}
               code={step.code}
               handlers={[tokenTransitions, mark]}
-              className="m-0 min-h-[22rem] overflow-auto px-4 py-4 text-[13px] leading-6"
+              className="m-0 min-h-88 overflow-auto px-4 py-4 text-[13px] leading-6"
             />
           ))}
         />

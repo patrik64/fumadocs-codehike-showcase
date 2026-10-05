@@ -50,18 +50,18 @@ export function Scrollycoding(props: unknown) {
           >
             <h3 className="mt-2 text-lg font-semibold">{step.title}</h3>
             <div>{step.children}</div>
-            <div className="mt-4 overflow-hidden rounded-lg border bg-[var(--ch-16)] lg:hidden">
+            <div className="mt-4 overflow-hidden rounded-lg border bg-(--ch-16) lg:hidden">
               <StepCode code={step.code} className="overflow-auto" />
             </div>
           </Selectable>
         ))}
       </div>
       <div className="hidden w-[45%] max-w-2xl lg:block">
-        <div className="sticky top-20 overflow-hidden rounded-lg border bg-[var(--ch-16)]">
+        <div className="sticky top-20 overflow-hidden rounded-lg border bg-(--ch-16)">
           <div className="max-h-[calc(100vh-7rem)] overflow-auto">
             <Selection
               from={steps.map((step, i) => (
-                <StepCode key={i} code={step.code} className="min-h-[32rem]" />
+                <StepCode key={i} code={step.code} className="min-h-128" />
               ))}
             />
           </div>
