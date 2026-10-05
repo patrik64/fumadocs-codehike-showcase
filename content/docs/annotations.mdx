@@ -206,23 +206,6 @@ export function CopyButton({ text }: { text: string }) {
 <CopyButton text={codeblock.code} />
 ```
 
-## Composition
-
-Handlers compose — one block can combine all of the above:
-
-```ts checkout.ts -n
-async function checkout(cart: Cart) {
-  // !diff -
-  const total = cart.items.reduce((sum, i) => sum + i.price, 0)
-  // !diff +
-  // !mark[/subtotal/]
-  const subtotal = sum(cart.items.map((i) => i.price * i.quantity))
-  // !callout[/tax/] Tax is computed server-side since v2
-  const tax = await fetchTax(cart.address, subtotal)
-  return subtotal + tax
-}
-```
-
 ## Focus
 
 `!focus` is `!mark` turned inside out: instead of lighting the lines it
@@ -620,3 +603,20 @@ is remounted, there is no "before" to animate from.
 The layouts on the next pages — [Scrollycoding](/docs/scrollycoding),
 [Spotlight](/docs/spotlight) and [Slideshow](/docs/slideshow) — hand the
 same handler to their code panels.
+
+## Composition
+
+Handlers compose — one block can combine several of the above:
+
+```ts checkout.ts -n
+async function checkout(cart: Cart) {
+  // !diff -
+  const total = cart.items.reduce((sum, i) => sum + i.price, 0)
+  // !diff +
+  // !mark[/subtotal/]
+  const subtotal = sum(cart.items.map((i) => i.price * i.quantity))
+  // !callout[/tax/] Tax is computed server-side since v2
+  const tax = await fetchTax(cart.address, subtotal)
+  return subtotal + tax
+}
+```
